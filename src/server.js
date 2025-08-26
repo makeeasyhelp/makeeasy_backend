@@ -15,10 +15,12 @@ dotenv.config();
 // Connect to database
 connectDB();
 
-// Seed database with initial data
-mongoose.connection.once('open', () => {
-  seedDatabase(mongoose);
-});
+// Seed database with initial data only in development
+if (process.env.NODE_ENV === 'development') {
+  mongoose.connection.once('open', () => {
+    seedDatabase(mongoose);
+  });
+}
 
 // Initialize Express app
 const app = express();
@@ -33,17 +35,17 @@ const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:3000',
   'http://localhost:5050',
-  'https://makeeasy-frontend.vercel.app', // Add your Vercel frontend URL
-  process.env.FRONTEND_URL, // Optional: Add from environment variable
-];
+  'https://makeeasy-frontend.vercel.app',
+  process.env.FRONTEND_URL,
+].filter(Boolean); // Remove any undefined values
 
 app.use(cors({
   origin: function(origin, callback) {
-    // allow requests with no origin (like mobile apps or curl requests)
-    if(!origin) return callback(null, true);
+    // Allow requests with no origin (like mobile apps, curl, Postman)
+    if (!origin) return callback(null, true);
     
-    if(allowedOrigins.indexOf(origin) === -1){
-      var msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+    if (allowedOrigins.indexOf(origin) === -1) {
+      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
       return callback(new Error(msg), false);
     }
     return callback(null, true);
