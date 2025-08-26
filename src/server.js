@@ -12,18 +12,74 @@ const mongoose = require('mongoose');
 // Load environment variables
 dotenv.config();
 
-// Connect to database
-connectDB();
-
-// Seed database with initial data only in development
-if (process.env.NODE_ENV === 'development') {
-  mongoose.connection.once('open', () => {
-    seedDatabase(mongoose);
-  });
-}
-
 // Initialize Express app
 const app = express();
+
+// Connect to database
+// For Vercel deployments, we want to log connection status but not exit on error
+const dbConnection = connectDB();
+
+// Create a status endpoint to check database connectivity
+app.get('/api/status', async (req, res) => {
+  const isConnected = mongoose.connection && mongoose.connection.readyState === 1;
+  
+  res.json({
+    status: 'online',
+    environment: process.env.NODE_ENV || 'development',
+    databaseConnected: isConnected,
+    timestamp: new Date().toISOString(),
+    mongoDbHost: isConnected ? mongoose.connection.host : 'not connected'
+  });
+});
+
+// Create a seed endpoint that can be called manually
+app.get('/api/seed-database', async (req, res) => {
+  try {
+    // This endpoint should only work in development or with a secret key
+    const apiKey = req.query.key || '';
+    const secretKey = process.env.SEED_API_KEY || 'make-easy-seed-key';
+    
+    if (process.env.NODE_ENV === 'production' && apiKey !== secretKey) {
+      return res.status(403).json({
+        success: false,
+        message: 'Not authorized to seed database in production'
+      });
+    }
+    
+    if (mongoose.connection && mongoose.connection.readyState === 1) {
+      await seedDatabase(mongoose);
+      return res.json({
+        success: true,
+        message: 'Database seed process initiated'
+      });
+    } else {
+      return res.status(500).json({
+        success: false,
+        message: 'Cannot seed database, MongoDB not connected'
+      });
+    }
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: 'Error seeding database',
+      error: error.message
+    });
+  }
+});
+
+// Seed database with initial data based on environment or manual override
+mongoose.connection.once('open', () => {
+  console.log('MongoDB connection open event triggered');
+  
+  // In development, always seed
+  // In production, only seed if explicitly enabled via environment variable
+  if (process.env.NODE_ENV === 'development' || process.env.FORCE_DB_SEED === 'true') {
+    console.log(`Database seeding enabled for ${process.env.NODE_ENV} environment`);
+    seedDatabase(mongoose);
+  } else {
+    console.log('Automatic database seeding disabled. Use /api/seed-database endpoint if needed.');
+  }
+});
 
 // Middleware
 app.use(express.json({ limit: '50mb' }));
@@ -118,7 +174,11 @@ app.use('/api/test', require('./routes/testRoutes'));
 
 // Base route
 app.get('/', (req, res) => {
-  res.json({ message: 'Welcome to MakeEasy API' });
+  res.json({ 
+    message: 'Welcome to MakeEasy API',
+    version: '1.0.0',
+    databaseConnected: mongoose.connection && mongoose.connection.readyState === 1
+  });
 });
 
 // Register with role endpoint - simple, direct access endpoint
