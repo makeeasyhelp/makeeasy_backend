@@ -9,7 +9,11 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "test:api": "node test-api.js",
     "test:api:py": "python test_api.py",
-    "test:all": "node run-all-tests.js"
+    "test:all": "node run-all-tests.js",
+    "test:db": "node scripts/test-db-connection.js",
+    "seed": "NODE_ENV=development FORCE_DB_SEED=true node -e \"require('./src/utils/seeder').seedDatabase(require('mongoose'))\"",
+    "deploy:logs": "vercel logs makeeasy-backend",
+    "deploy:env": "vercel env ls"
   },
   "keywords": [],
   "author": "",
