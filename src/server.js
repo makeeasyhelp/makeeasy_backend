@@ -36,6 +36,7 @@ const allowedOrigins = [
   'http://localhost:5050',
   'https://makeeasy-frontend.vercel.app',
   'https://makeeasy-ui.vercel.app',
+  'https://my-makeeasy-app.vercel.app',
   process.env.FRONTEND_URL,
 ].filter(Boolean); // Remove any undefined values
 
