@@ -5,6 +5,7 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
+    "vercel-build": "echo 'Building...'",
     "test": "echo \"Error: no test specified\" && exit 1",
     "test:api": "node test-api.js",
     "test:api:py": "python test_api.py",
