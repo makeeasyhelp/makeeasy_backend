@@ -246,17 +246,22 @@ app.post('/api/simple-register', express.json(), async (req, res) => {
 // Error handler middleware
 app.use(errorHandler);
 
-// Set port
-const PORT = process.env.PORT || 5050;
-
-// Start server
-const server = app.listen(PORT, () => {
-  console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
-});
-
 // Handle unhandled promise rejections
-process.on('unhandledRejection', (err, promise) => {
+process.on('unhandledRejection', (err) => {
   console.log(`Error: ${err.message}`);
-  // Close server & exit process
-  server.close(() => process.exit(1));
+  // In production, we'll let the process continue
+  if (process.env.NODE_ENV === 'development') {
+    process.exit(1);
+  }
 });
+
+// For local development
+if (process.env.NODE_ENV !== 'production') {
+  const PORT = process.env.PORT || 5050;
+  app.listen(PORT, () => {
+    console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+  });
+}
+
+// Export the Express app for Vercel
+module.exports = app;
