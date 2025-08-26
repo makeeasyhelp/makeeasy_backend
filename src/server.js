@@ -15,10 +15,12 @@ dotenv.config();
 // Connect to database
 connectDB();
 
-// Seed database with initial data
-mongoose.connection.once('open', () => {
-  seedDatabase(mongoose);
-});
+// Seed database with initial data only in development
+if (process.env.NODE_ENV === 'development') {
+  mongoose.connection.once('open', () => {
+    seedDatabase(mongoose);
+  });
+}
 
 // Initialize Express app
 const app = express();
@@ -29,8 +31,25 @@ app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 app.use(cookieParser());
 
 // CORS Configuration
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:3000',
+  'http://localhost:5050',
+  'https://makeeasy-frontend.vercel.app',
+  process.env.FRONTEND_URL,
+].filter(Boolean); // Remove any undefined values
+
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:3000', 'http://localhost:5050'],
+  origin: function(origin, callback) {
+    // Allow requests with no origin (like mobile apps, curl, Postman)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) === -1) {
+      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'Cache-Control', 'Pragma', 'If-Modified-Since', 'If-None-Match'],
@@ -229,17 +248,22 @@ app.post('/api/simple-register', express.json(), async (req, res) => {
 // Error handler middleware
 app.use(errorHandler);
 
-// Set port
-const PORT = process.env.PORT || 5050;
-
-// Start server
-const server = app.listen(PORT, () => {
-  console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
-});
-
 // Handle unhandled promise rejections
-process.on('unhandledRejection', (err, promise) => {
+process.on('unhandledRejection', (err) => {
   console.log(`Error: ${err.message}`);
-  // Close server & exit process
-  server.close(() => process.exit(1));
+  // In production, we'll let the process continue
+  if (process.env.NODE_ENV === 'development') {
+    process.exit(1);
+  }
 });
+
+// For local development
+if (process.env.NODE_ENV !== 'production') {
+  const PORT = process.env.PORT || 5050;
+  app.listen(PORT, () => {
+    console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+  });
+}
+
+// Export the Express app for Vercel
+module.exports = app;
