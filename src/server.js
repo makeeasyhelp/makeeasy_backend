@@ -33,7 +33,6 @@ app.use(cookieParser());
 // CORS Configuration
 const allowedOrigins = [
   'http://localhost:5173',
-  'http://localhost:3000',
   'http://localhost:5050',
   'https://makeeasy-frontend.vercel.app',
   'https://makeeasy-ui.vercel.app',
@@ -53,7 +52,7 @@ app.use(cors({
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'Cache-Control', 'Pragma', 'If-Modified-Since', 'If-None-Match'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Cache-Control', 'Pragma', 'If-Modified-Since', 'If-None-Match','*'],
   exposedHeaders: ['ETag', 'Last-Modified', 'Cache-Control']
 }));
 
