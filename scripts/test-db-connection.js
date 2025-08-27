@@ -2,20 +2,34 @@ const mongoose = require('mongoose');
 require('dotenv').config();
 
 const testDBConnection = async () => {
-  console.log('Testing MongoDB connection...');
+  console.log('🔍 Testing MongoDB connection...');
+  console.log('🌐 Environment:', process.env.NODE_ENV || 'development');
+  
+  // Mask the MongoDB URI for security but show part of it for verification
+  const uriMasked = process.env.MONGO_URI ? 
+    process.env.MONGO_URI.replace(/:\/\/([^:]+):([^@]+)@/, '://***:***@') : 
+    'undefined';
+  console.log('🔗 MongoDB URI:', uriMasked);
   
   if (!process.env.MONGO_URI) {
-    console.error('Error: MONGO_URI environment variable is not defined');
+    console.error('❌ Error: MONGO_URI environment variable is not defined');
     process.exit(1);
   }
 
   try {
-    const conn = await mongoose.connect(process.env.MONGO_URI);
+    console.log('⏳ Connecting to MongoDB...');
+    
+    // Timeout after 10 seconds
+    const conn = await mongoose.connect(process.env.MONGO_URI, {
+      serverSelectionTimeoutMS: 10000
+    });
+    
     console.log(`✅ MongoDB Connected Successfully: ${conn.connection.host}`);
+    console.log(`📊 Database Name: ${conn.connection.name}`);
     
     // Get all collections
     const collections = await mongoose.connection.db.listCollections().toArray();
-    console.log('Available Collections:');
+    console.log('📁 Available Collections:');
     collections.forEach(collection => {
       console.log(`- ${collection.name}`);
     });

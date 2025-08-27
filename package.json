@@ -11,11 +11,13 @@
     "test:api:py": "python test_api.py",
     "test:all": "node run-all-tests.js",
     "test:db": "node scripts/test-db-connection.js",
+    "test:vercel-db": "node scripts/verify-vercel-connection.js",
     "verify-db": "node scripts/verify-db.js",
     "seed": "NODE_ENV=development FORCE_DB_SEED=true node -e \"require('./src/utils/seeder').seedDatabase(require('mongoose'))\"",
     "deploy:logs": "vercel logs makeeasy-backend",
     "deploy:env": "vercel env ls",
-    "deploy:seed": "curl \"https://makeeasy-backend.vercel.app/api/seed-database?key=make-easy-seed-key\""
+    "deploy:seed": "curl \"https://makeeasy-backend.vercel.app/api/seed-database?key=make-easy-seed-key\"",
+    "check-status": "curl https://makeeasy-backend.vercel.app/api/status"
   },
   "keywords": [],
   "author": "",

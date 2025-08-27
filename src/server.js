@@ -12,23 +12,100 @@ const mongoose = require('mongoose');
 // Load environment variables
 dotenv.config();
 
+// Check and log critical environment variables for troubleshooting
+console.log('=== ENVIRONMENT CONFIGURATION ===');
+console.log('NODE_ENV:', process.env.NODE_ENV || 'Not set');
+console.log('MONGO_URI configured:', !!process.env.MONGO_URI);
+console.log('VERCEL environment:', process.env.VERCEL ? 'Yes' : 'No');
+console.log('================================');
+
 // Initialize Express app
 const app = express();
 
-// Connect to database
+// Connect to database with retries
 // For Vercel deployments, we want to log connection status but not exit on error
-const dbConnection = connectDB();
+// Using IIFE to allow top-level await in ES modules
+(async () => {
+  try {
+    // Log environment info for debugging
+    console.log('=== DATABASE CONNECTION ATTEMPT ===');
+    console.log('NODE_ENV:', process.env.NODE_ENV || 'Not set');
+    console.log('VERCEL:', process.env.VERCEL === '1' ? 'Yes' : 'No');
+    console.log('MONGO_URI configured:', !!process.env.MONGO_URI);
+    
+    // Print masked MongoDB URI for security
+    if (process.env.MONGO_URI) {
+      const uriMasked = process.env.MONGO_URI.replace(/:\/\/([^:]+):([^@]+)@/, '://***:***@');
+      console.log('MongoDB URI:', uriMasked);
+    }
+    
+    // Attempt connection
+    await connectDB();
+    
+    // If we're connected successfully, set up connection event handlers
+    if (mongoose.connection) {
+      mongoose.connection.on('disconnected', () => {
+        console.log('MongoDB disconnected!');
+      });
+      
+      mongoose.connection.on('error', (err) => {
+        console.error('MongoDB connection error:', err);
+      });
+    }
+  } catch (err) {
+    console.error('Failed to establish initial database connection:', err.message);
+  }
+})();
 
 // Create a status endpoint to check database connectivity
 app.get('/api/status', async (req, res) => {
+  // Try to connect to the database if not already connected or in error state
+  if (!mongoose.connection || mongoose.connection.readyState !== 1) {
+    try {
+      console.log('Status endpoint: Attempting to reconnect to MongoDB...');
+      // Force connection reset if in error state
+      if (mongoose.connection && mongoose.connection.readyState === 2) {
+        console.log('Connection in connecting state, waiting...');
+        // Wait a moment for existing connection attempt to finish
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      } else if (mongoose.connection && mongoose.connection.readyState === 3) {
+        console.log('Connection in error state, disconnecting...');
+        await mongoose.disconnect();
+      }
+      
+      // Log MongoDB URI (masked for security)
+      const uriMasked = process.env.MONGO_URI ? 
+        process.env.MONGO_URI.replace(/:\/\/([^:]+):([^@]+)@/, '://***:***@') : 
+        'undefined';
+      console.log(`Status endpoint: Using MongoDB URI: ${uriMasked}`);
+      
+      // Attempt to reconnect
+      await connectDB();
+    } catch (err) {
+      console.error('Status endpoint: Failed to connect to MongoDB:', err.message);
+    }
+  }
+  
   const isConnected = mongoose.connection && mongoose.connection.readyState === 1;
+  const readyState = mongoose.connection ? mongoose.connection.readyState : -1;
+  const readyStateMap = {
+    0: 'disconnected', 
+    1: 'connected', 
+    2: 'connecting', 
+    3: 'disconnecting',
+    '-1': 'uninitialized'
+  };
   
   res.json({
     status: 'online',
     environment: process.env.NODE_ENV || 'development',
     databaseConnected: isConnected,
     timestamp: new Date().toISOString(),
-    mongoDbHost: isConnected ? mongoose.connection.host : 'not connected'
+    mongoDbHost: isConnected ? mongoose.connection.host : 'not connected',
+    connectionState: readyStateMap[readyState],
+    connectionStateValue: readyState,
+    mongoUriConfigured: !!process.env.MONGO_URI,
+    vercel: process.env.VERCEL === '1' ? 'yes' : 'no'
   });
 });
 
