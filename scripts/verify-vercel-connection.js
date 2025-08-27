@@ -1,11 +1,19 @@
 // A script to verify MongoDB connection in a simulated Vercel environment
-require('dotenv').config();
+require('dotenv').config({ path: '../.env' });
 const mongoose = require('mongoose');
 const connectDB = require('../src/config/db');
 
 // Simulate Vercel environment
 process.env.NODE_ENV = 'production';
 process.env.VERCEL = '1';
+process.env.FORCE_DB_SEED = 'true';
+process.env.MONGO_URI = 'mongodb+srv://makeeasyhelp:Make%40easy%40261141@cluster0.7x2dabc.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
+
+// Load models before seeding
+require('../src/models/userModel');
+require('../src/models/categoryModel');
+require('../src/models/productModel');
+require('../src/models/serviceModel');
 
 const verifyConnection = async () => {
   console.log('=== VERCEL CONNECTION TEST ===');
@@ -52,6 +60,13 @@ const verifyConnection = async () => {
   } catch (err) {
     console.error(`\n❌ Error testing MongoDB connection: ${err.message}`);
   } finally {
+    // Seed database if connection successful
+    if (mongoose.connection && mongoose.connection.readyState === 1) {
+      console.log('\n🌱 Starting database seeding process...');
+      const { seedDatabase } = require('../src/utils/seeder');
+      await seedDatabase(mongoose);
+    }
+    
     // Close the connection
     if (mongoose.connection) {
       await mongoose.connection.close();
