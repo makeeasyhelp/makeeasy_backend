@@ -245,6 +245,7 @@ app.use('/api/products', require('./routes/productRoutes'));
 app.use('/api/categories', require('./routes/categoryRoutes'));
 app.use('/api/services', require('./routes/serviceRoutes'));
 app.use('/api/bookings', require('./routes/bookingRoutes'));
+app.use('/api/about', require('./routes/aboutRoutes'));
 
 // Test routes (No auth required - for troubleshooting)
 app.use('/api/test', require('./routes/testRoutes'));

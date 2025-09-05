@@ -1,0 +1,1452 @@
+{
+	"info": {
+		"_postman_id": "e5c08e5a-2d62-4f7a-b0b5-35e80cc91a23",
+		"name": "MakeEasy API",
+		"description": "API Collection for MakeEasy Backend Service",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Status",
+			"item": [
+				{
+					"name": "Check API Status",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://makeeasy-backend.vercel.app/api/status",
+							"protocol": "https",
+							"host": [
+								"makeeasy-backend",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"status"
+							]
+						},
+						"description": "Checks the status of the API and the database connection"
+					},
+					"response": []
+				},
+				{
+					"name": "Seed Database",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://makeeasy-backend.vercel.app/api/seed-database?key=make-easy-seed-key",
+							"protocol": "https",
+							"host": [
+								"makeeasy-backend",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"seed-database"
+							],
+							"query": [
+								{
+									"key": "key",
+									"value": "make-easy-seed-key"
+								}
+							]
+						},
+						"description": "Seeds the database with initial data. Requires a secret key in production."
+					},
+					"response": []
+				},
+				{
+					"name": "Home",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://makeeasy-backend.vercel.app/",
+							"protocol": "https",
+							"host": [
+								"makeeasy-backend",
+								"vercel",
+								"app"
+							],
+							"path": [
+								""
+							]
+						},
+						"description": "Gets the home/base route"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints for checking API status and health"
+		},
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Test User\",\n    \"email\": \"testuser@example.com\",\n    \"password\": \"password123\",\n    \"phone\": \"9876543210\"\n}"
+						},
+						"url": {
+							"raw": "https://makeeasy-backend.vercel.app/api/auth/register",
+							"protocol": "https",
+							"host": [
+								"makeeasy-backend",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"auth",
+								"register"
+							]
+						},
+						"description": "Register a new user"
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"testuser@example.com\",\n    \"password\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "https://makeeasy-backend.vercel.app/api/auth/login",
+							"protocol": "https",
+							"host": [
+								"makeeasy-backend",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						},
+						"description": "Login with user credentials"
+					},
+					"response": []
+				},
+				{
+					"name": "Admin Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"admin@example.com\",\n    \"password\": \"adminpassword\"\n}"
+						},
+						"url": {
+							"raw": "https://makeeasy-backend.vercel.app/api/auth/admin/login",
+							"protocol": "https",
+							"host": [
+								"makeeasy-backend",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"auth",
+								"admin",
+								"login"
+							]
+						},
+						"description": "Login with admin credentials"
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "https://makeeasy-backend.vercel.app/api/auth/logout",
+							"protocol": "https",
+							"host": [
+								"makeeasy-backend",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"auth",
+								"logout"
+							]
+						},
+						"description": "Logout the current user"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Current User",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "https://makeeasy-backend.vercel.app/api/auth/me",
+							"protocol": "https",
+							"host": [
+								"makeeasy-backend",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"auth",
+								"me"
+							]
+						},
+						"description": "Get the currently logged in user's profile"
+					},
+					"response": []
+				},
+				{
+					"name": "Update User Details",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Updated Name\",\n    \"email\": \"updated@example.com\",\n    \"phone\": \"1234567890\"\n}"
+						},
+						"url": {
+							"raw": "https://makeeasy-backend.vercel.app/api/auth/updatedetails",
+							"protocol": "https",
+							"host": [
+								"makeeasy-backend",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"auth",
+								"updatedetails"
+							]
+						},
+						"description": "Update the current user's details"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Password",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"currentPassword\": \"password123\",\n    \"newPassword\": \"newpassword123\"\n}"
+						},
+						"url": {
+							"raw": "https://makeeasy-backend.vercel.app/api/auth/updatepassword",
+							"protocol": "https",
+							"host": [
+								"makeeasy-backend",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"auth",
+								"updatepassword"
+							]
+						},
+						"description": "Update the current user's password"
+					},
+					"response": []
+				},
+				{
+					"name": "Forgot Password",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"testuser@example.com\"\n}"
+						},
+						"url": {
+							"raw": "https://makeeasy-backend.vercel.app/api/auth/forgotpassword",
+							"protocol": "https",
+							"host": [
+								"makeeasy-backend",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"auth",
+								"forgotpassword"
+							]
+						},
+						"description": "Request a password reset"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints for user authentication and management"
+		},
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Get All Users",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "https://makeeasy-backend.vercel.app/api/users",
+							"protocol": "https",
+							"host": [
+								"makeeasy-backend",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"users"
+							]
+						},
+						"description": "Get all users (admin only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get User by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "https://makeeasy-backend.vercel.app/api/users/{{userId}}",
+							"protocol": "https",
+							"host": [
+								"makeeasy-backend",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"users",
+								"{{userId}}"
+							]
+						},
+						"description": "Get a user by ID (admin only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Create User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"New User\",\n    \"email\": \"newuser@example.com\",\n    \"password\": \"password123\",\n    \"phone\": \"9876543210\",\n    \"role\": \"user\"\n}"
+						},
+						"url": {
+							"raw": "https://makeeasy-backend.vercel.app/api/users",
+							"protocol": "https",
+							"host": [
+								"makeeasy-backend",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"users"
+							]
+						},
+						"description": "Create a new user (admin only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Update User",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Updated User\",\n    \"email\": \"updated@example.com\",\n    \"phone\": \"1234567890\",\n    \"role\": \"user\"\n}"
+						},
+						"url": {
+							"raw": "https://makeeasy-backend.vercel.app/api/users/{{userId}}",
+							"protocol": "https",
+							"host": [
+								"makeeasy-backend",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"users",
+								"{{userId}}"
+							]
+						},
+						"description": "Update a user (admin only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete User",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "https://makeeasy-backend.vercel.app/api/users/{{userId}}",
+							"protocol": "https",
+							"host": [
+								"makeeasy-backend",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"users",
+								"{{userId}}"
+							]
+						},
+						"description": "Delete a user (admin only)"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints for user management (admin only)"
+		},
+		{
+			"name": "Categories",
+			"item": [
+				{
+					"name": "Get All Categories",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://makeeasy-backend.vercel.app/api/categories",
+							"protocol": "https",
+							"host": [
+								"makeeasy-backend",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"categories"
+							]
+						},
+						"description": "Get all categories"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Category by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://makeeasy-backend.vercel.app/api/categories/{{categoryId}}",
+							"protocol": "https",
+							"host": [
+								"makeeasy-backend",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"categories",
+								"{{categoryId}}"
+							]
+						},
+						"description": "Get a category by ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Category",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"New Category\",\n    \"description\": \"Description for new category\",\n    \"image\": \"https://example.com/image.jpg\"\n}"
+						},
+						"url": {
+							"raw": "https://makeeasy-backend.vercel.app/api/categories",
+							"protocol": "https",
+							"host": [
+								"makeeasy-backend",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"categories"
+							]
+						},
+						"description": "Create a new category (admin only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Category",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Updated Category\",\n    \"description\": \"Updated description\",\n    \"image\": \"https://example.com/updated-image.jpg\"\n}"
+						},
+						"url": {
+							"raw": "https://makeeasy-backend.vercel.app/api/categories/{{categoryId}}",
+							"protocol": "https",
+							"host": [
+								"makeeasy-backend",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"categories",
+								"{{categoryId}}"
+							]
+						},
+						"description": "Update a category (admin only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Category",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "https://makeeasy-backend.vercel.app/api/categories/{{categoryId}}",
+							"protocol": "https",
+							"host": [
+								"makeeasy-backend",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"categories",
+								"{{categoryId}}"
+							]
+						},
+						"description": "Delete a category (admin only)"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints for category management"
+		},
+		{
+			"name": "Products",
+			"item": [
+				{
+					"name": "Get All Products",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://makeeasy-backend.vercel.app/api/products",
+							"protocol": "https",
+							"host": [
+								"makeeasy-backend",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"products"
+							]
+						},
+						"description": "Get all products"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Featured Products",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://makeeasy-backend.vercel.app/api/products/featured",
+							"protocol": "https",
+							"host": [
+								"makeeasy-backend",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"products",
+								"featured"
+							]
+						},
+						"description": "Get featured products"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Product by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://makeeasy-backend.vercel.app/api/products/{{productId}}",
+							"protocol": "https",
+							"host": [
+								"makeeasy-backend",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"products",
+								"{{productId}}"
+							]
+						},
+						"description": "Get a product by ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Product",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"New Product\",\n    \"description\": \"Description for new product\",\n    \"price\": 99.99,\n    \"category\": \"{{categoryId}}\",\n    \"images\": [\"https://example.com/image1.jpg\", \"https://example.com/image2.jpg\"],\n    \"featured\": false,\n    \"specifications\": {\n        \"weight\": \"1kg\",\n        \"dimensions\": \"10x15x5 cm\",\n        \"color\": \"black\"\n    }\n}"
+						},
+						"url": {
+							"raw": "https://makeeasy-backend.vercel.app/api/products",
+							"protocol": "https",
+							"host": [
+								"makeeasy-backend",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"products"
+							]
+						},
+						"description": "Create a new product (admin only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Product",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Updated Product\",\n    \"description\": \"Updated description\",\n    \"price\": 129.99,\n    \"featured\": true\n}"
+						},
+						"url": {
+							"raw": "https://makeeasy-backend.vercel.app/api/products/{{productId}}",
+							"protocol": "https",
+							"host": [
+								"makeeasy-backend",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"products",
+								"{{productId}}"
+							]
+						},
+						"description": "Update a product (admin only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Product",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "https://makeeasy-backend.vercel.app/api/products/{{productId}}",
+							"protocol": "https",
+							"host": [
+								"makeeasy-backend",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"products",
+								"{{productId}}"
+							]
+						},
+						"description": "Delete a product (admin only)"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints for product management"
+		},
+		{
+			"name": "Services",
+			"item": [
+				{
+					"name": "Get All Services",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://makeeasy-backend.vercel.app/api/services",
+							"protocol": "https",
+							"host": [
+								"makeeasy-backend",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"services"
+							]
+						},
+						"description": "Get all services"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Featured Services",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://makeeasy-backend.vercel.app/api/services/featured",
+							"protocol": "https",
+							"host": [
+								"makeeasy-backend",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"services",
+								"featured"
+							]
+						},
+						"description": "Get featured services"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Service by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://makeeasy-backend.vercel.app/api/services/{{serviceId}}",
+							"protocol": "https",
+							"host": [
+								"makeeasy-backend",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"services",
+								"{{serviceId}}"
+							]
+						},
+						"description": "Get a service by ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Service",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"New Service\",\n    \"description\": \"Description for new service\",\n    \"price\": 149.99,\n    \"category\": \"{{categoryId}}\",\n    \"images\": [\"https://example.com/service1.jpg\", \"https://example.com/service2.jpg\"],\n    \"featured\": false,\n    \"duration\": \"2 hours\",\n    \"inclusions\": [\"Item 1\", \"Item 2\", \"Item 3\"],\n    \"exclusions\": [\"Item A\", \"Item B\"]\n}"
+						},
+						"url": {
+							"raw": "https://makeeasy-backend.vercel.app/api/services",
+							"protocol": "https",
+							"host": [
+								"makeeasy-backend",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"services"
+							]
+						},
+						"description": "Create a new service (admin only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Service",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Updated Service\",\n    \"description\": \"Updated description\",\n    \"price\": 199.99,\n    \"featured\": true,\n    \"duration\": \"3 hours\"\n}"
+						},
+						"url": {
+							"raw": "https://makeeasy-backend.vercel.app/api/services/{{serviceId}}",
+							"protocol": "https",
+							"host": [
+								"makeeasy-backend",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"services",
+								"{{serviceId}}"
+							]
+						},
+						"description": "Update a service (admin only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Service",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "https://makeeasy-backend.vercel.app/api/services/{{serviceId}}",
+							"protocol": "https",
+							"host": [
+								"makeeasy-backend",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"services",
+								"{{serviceId}}"
+							]
+						},
+						"description": "Delete a service (admin only)"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints for service management"
+		},
+		{
+			"name": "Bookings",
+			"item": [
+				{
+					"name": "Get All Bookings",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "https://makeeasy-backend.vercel.app/api/bookings",
+							"protocol": "https",
+							"host": [
+								"makeeasy-backend",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"bookings"
+							]
+						},
+						"description": "Get all bookings for the current user (or all bookings for admin)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Booking by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "https://makeeasy-backend.vercel.app/api/bookings/{{bookingId}}",
+							"protocol": "https",
+							"host": [
+								"makeeasy-backend",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"bookings",
+								"{{bookingId}}"
+							]
+						},
+						"description": "Get a booking by ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Booking",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"{{serviceId}}\",\n    \"scheduledDate\": \"2025-09-15T10:00:00.000Z\",\n    \"address\": {\n        \"street\": \"123 Main St\",\n        \"city\": \"Mumbai\",\n        \"state\": \"Maharashtra\",\n        \"pincode\": \"400001\",\n        \"landmark\": \"Near Park\"\n    },\n    \"paymentMethod\": \"COD\",\n    \"specialInstructions\": \"Please call before arrival\"\n}"
+						},
+						"url": {
+							"raw": "https://makeeasy-backend.vercel.app/api/bookings",
+							"protocol": "https",
+							"host": [
+								"makeeasy-backend",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"bookings"
+							]
+						},
+						"description": "Create a new booking"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Booking",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"scheduledDate\": \"2025-09-16T14:00:00.000Z\",\n    \"address\": {\n        \"street\": \"456 New St\",\n        \"city\": \"Mumbai\",\n        \"state\": \"Maharashtra\",\n        \"pincode\": \"400002\",\n        \"landmark\": \"Near Mall\"\n    },\n    \"specialInstructions\": \"Updated instructions\"\n}"
+						},
+						"url": {
+							"raw": "https://makeeasy-backend.vercel.app/api/bookings/{{bookingId}}",
+							"protocol": "https",
+							"host": [
+								"makeeasy-backend",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"bookings",
+								"{{bookingId}}"
+							]
+						},
+						"description": "Update a booking"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Booking",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "https://makeeasy-backend.vercel.app/api/bookings/{{bookingId}}",
+							"protocol": "https",
+							"host": [
+								"makeeasy-backend",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"bookings",
+								"{{bookingId}}"
+							]
+						},
+						"description": "Delete a booking"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Payment Status",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"paymentStatus\": \"paid\"\n}"
+						},
+						"url": {
+							"raw": "https://makeeasy-backend.vercel.app/api/bookings/{{bookingId}}/payment",
+							"protocol": "https",
+							"host": [
+								"makeeasy-backend",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"bookings",
+								"{{bookingId}}",
+								"payment"
+							]
+						},
+						"description": "Update a booking's payment status (admin only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Booking Status",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"status\": \"completed\"\n}"
+						},
+						"url": {
+							"raw": "https://makeeasy-backend.vercel.app/api/bookings/{{bookingId}}/status",
+							"protocol": "https",
+							"host": [
+								"makeeasy-backend",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"bookings",
+								"{{bookingId}}",
+								"status"
+							]
+						},
+						"description": "Update a booking's status (admin only)"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints for booking management"
+		},
+		{
+			"name": "Test Endpoints",
+			"item": [
+				{
+					"name": "Test Register",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Test User\",\n    \"email\": \"testuser@example.com\",\n    \"password\": \"password123\",\n    \"phone\": \"9876543210\",\n    \"role\": \"user\"\n}"
+						},
+						"url": {
+							"raw": "https://makeeasy-backend.vercel.app/api/test/register",
+							"protocol": "https",
+							"host": [
+								"makeeasy-backend",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"test",
+								"register"
+							]
+						},
+						"description": "Test register endpoint (no auth required)"
+					},
+					"response": []
+				},
+				{
+					"name": "Test Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"testuser@example.com\",\n    \"password\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "https://makeeasy-backend.vercel.app/api/test/login",
+							"protocol": "https",
+							"host": [
+								"makeeasy-backend",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"test",
+								"login"
+							]
+						},
+						"description": "Test login endpoint (no auth required)"
+					},
+					"response": []
+				},
+				{
+					"name": "Test Get All Users",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://makeeasy-backend.vercel.app/api/test/users",
+							"protocol": "https",
+							"host": [
+								"makeeasy-backend",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"test",
+								"users"
+							]
+						},
+						"description": "Test endpoint to get all users (no auth required)"
+					},
+					"response": []
+				},
+				{
+					"name": "Simple Role Register",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Test User\",\n    \"email\": \"testuser@example.com\",\n    \"password\": \"password123\",\n    \"phone\": \"9876543210\",\n    \"role\": \"user\"\n}"
+						},
+						"url": {
+							"raw": "https://makeeasy-backend.vercel.app/simple-role-register",
+							"protocol": "https",
+							"host": [
+								"makeeasy-backend",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"simple-role-register"
+							]
+						},
+						"description": "Simple register endpoint with role specification (no auth required)"
+					},
+					"response": []
+				},
+				{
+					"name": "Simple Register",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Test User\",\n    \"email\": \"testuser@example.com\",\n    \"password\": \"password123\",\n    \"phone\": \"9876543210\"\n}"
+						},
+						"url": {
+							"raw": "https://makeeasy-backend.vercel.app/api/simple-register",
+							"protocol": "https",
+							"host": [
+								"makeeasy-backend",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"simple-register"
+							]
+						},
+						"description": "Simple register endpoint (no auth required)"
+					},
+					"response": []
+				}
+			],
+			"description": "Test endpoints for troubleshooting (no authentication required)"
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "token",
+			"value": "YOUR_AUTH_TOKEN_HERE",
+			"type": "string",
+			"description": "Authentication token received after login"
+		},
+		{
+			"key": "userId",
+			"value": "USER_ID_HERE",
+			"type": "string",
+			"description": "ID of a user"
+		},
+		{
+			"key": "categoryId",
+			"value": "CATEGORY_ID_HERE",
+			"type": "string",
+			"description": "ID of a category"
+		},
+		{
+			"key": "productId",
+			"value": "PRODUCT_ID_HERE",
+			"type": "string",
+			"description": "ID of a product"
+		},
+		{
+			"key": "serviceId",
+			"value": "SERVICE_ID_HERE",
+			"type": "string",
+			"description": "ID of a service"
+		},
+		{
+			"key": "bookingId",
+			"value": "BOOKING_ID_HERE",
+			"type": "string",
+			"description": "ID of a booking"
+		}
+	]
+}

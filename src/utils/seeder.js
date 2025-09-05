@@ -144,6 +144,20 @@ const seedDatabase = async (mongoose) => {
         console.error('Error seeding services:', err);
       }
     }
+
+    //Create data for About Us page if not exists
+    const About = mongoose.model('About');
+    const aboutCount = await About.countDocuments();
+    if (aboutCount === 0) {
+      try {
+        await About.create({
+          content: "Welcome to MakeEasy, your trusted platform for buying, selling, and availing services with ease. Our mission is to simplify your life by providing a seamless experience for all your needs. Whether you're looking to purchase quality products, sell your items, or hire professional services, MakeEasy is here to help you every step of the way."
+        });
+        console.log('About Us content seeded successfully');
+      } catch (err) {
+        console.error('Error seeding About Us content:', err);
+      }
+    }
     
     console.log('Seed data creation process completed');
   } catch (error) {
