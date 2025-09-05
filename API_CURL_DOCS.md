@@ -9,6 +9,7 @@ This document contains curl commands for testing all endpoints of the MakeEasy b
 - [Category APIs](#category-apis)
 - [Service APIs](#service-apis)
 - [Booking APIs](#booking-apis)
+- [About APIs](#about-apis)
 
 ## Authentication APIs
 
@@ -370,6 +371,96 @@ curl -X PUT http://localhost:5000/api/bookings/BOOKING_ID_HERE/status \
   -d '{
     "bookingStatus": "confirmed"
   }'
+```
+
+## About APIs
+
+### Get all about documents
+```bash
+curl -X GET http://localhost:5000/api/about
+```
+
+### Get single about document by ID
+```bash
+curl -X GET http://localhost:5000/api/about/ABOUT_ID_HERE
+```
+
+### Create new about document (Admin only)
+```bash
+curl -X POST http://localhost:5000/api/about \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer ADMIN_TOKEN_HERE" \
+  -d '{
+    "mission": {
+      "title": "Our Mission Title",
+      "subtitle": "Our Mission Subtitle",
+      "logoUrl": "https://example.com/logo.png"
+    },
+    "story": {
+      "heading": "Our Story",
+      "description": "Description of our story.",
+      "highlights": {
+        "customers": "10,000+",
+        "providers": "500+",
+        "cities": "15+"
+      }
+    },
+    "coreValues": [
+      { "title": "Integrity", "description": "We value integrity." },
+      { "title": "Innovation", "description": "We foster innovation." }
+    ],
+    "leadershipTeam": [
+      {
+        "name": "John Doe",
+        "role": "CEO",
+        "bio": "John is the CEO.",
+        "imageUrl": "https://example.com/john.jpg",
+        "socials": {
+          "linkedin": "https://linkedin.com/in/johndoe",
+          "twitter": "https://twitter.com/johndoe",
+          "facebook": "https://facebook.com/johndoe"
+        }
+      }
+    ],
+    "blog": [
+      {
+        "category": "Company News",
+        "date": "2025-09-05T00:00:00.000Z",
+        "title": "We launched!",
+        "description": "Our launch story.",
+        "link": "https://example.com/blog/launch"
+      }
+    ],
+    "journey": [
+      { "year": "2020", "description": "Founded." },
+      { "year": "2025", "description": "Reached 10,000 customers." }
+    ],
+    "community": {
+      "heading": "Join the MakeEasy Community",
+      "description": "Be a part of our growing community.",
+      "buttons": [
+        { "text": "Join Us", "link": "https://example.com/join" }
+      ]
+    }
+  }'
+```
+
+### Update about document (Admin only)
+```bash
+curl -X PUT http://localhost:5000/api/about/ABOUT_ID_HERE \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer ADMIN_TOKEN_HERE" \
+  -d '{
+    "mission": {
+      "title": "Updated Mission Title"
+    }
+  }'
+```
+
+### Delete about document (Admin only)
+```bash
+curl -X DELETE http://localhost:5000/api/about/ABOUT_ID_HERE \
+  -H "Authorization: Bearer ADMIN_TOKEN_HERE"
 ```
 
 ## Tips for using the API

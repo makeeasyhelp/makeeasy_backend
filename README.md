@@ -210,3 +210,6 @@ The frontend React application can connect to this backend using the API integra
 - `/my-makeeasy-app/src/services/api.js`
 
 This utility provides methods for interacting with all backend endpoints and handles authentication.
+
+
+<!-- /Users/gouravsharma/Desktop/GOURAVCODE/Vaibhav/makeeasy-backend/scripts/verify-vercel-connection.js -->
