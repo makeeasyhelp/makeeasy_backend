@@ -151,7 +151,80 @@ const seedDatabase = async (mongoose) => {
     if (aboutCount === 0) {
       try {
         await About.create({
-          content: "Welcome to MakeEasy, your trusted platform for buying, selling, and availing services with ease. Our mission is to simplify your life by providing a seamless experience for all your needs. Whether you're looking to purchase quality products, sell your items, or hire professional services, MakeEasy is here to help you every step of the way."
+          mission: {
+            title: "Our Mission",
+            subtitle: "Simplifying your life through seamless service delivery",
+            logoUrl: ""
+          },
+          story: {
+            heading: "Our Story",
+            description: "Welcome to MakeEasy, your trusted platform for buying, selling, and availing services with ease. Our mission is to simplify your life by providing a seamless experience for all your needs. Whether you're looking to purchase quality products, sell your items, or hire professional services, MakeEasy is here to help you every step of the way.",
+            highlights: {
+              customers: "10,000+",
+              providers: "500+",
+              cities: "15+"
+            }
+          },
+          coreValues: [
+            {
+              title: "Customer First",
+              description: "We prioritize our customers' needs and satisfaction above everything else."
+            },
+            {
+              title: "Quality Service",
+              description: "We ensure all our service providers meet the highest standards of quality."
+            },
+            {
+              title: "Trust & Reliability",
+              description: "Building lasting relationships through transparency and dependable service."
+            }
+          ],
+          leadershipTeam: [
+            {
+              name: "John Doe",
+              role: "CEO & Founder",
+              bio: "Visionary leader with 15+ years of experience in technology and service industries.",
+              imageUrl: "",
+              socials: {
+                linkedin: "",
+                twitter: "",
+                facebook: ""
+              }
+            }
+          ],
+          blog: [
+            {
+              category: "Company News",
+              date: new Date("2024-01-15"),
+              title: "Welcome to MakeEasy",
+              description: "Introducing our platform that makes finding and booking services easier than ever.",
+              link: "/blog/welcome-to-makeeasy"
+            }
+          ],
+          journey: [
+            {
+              year: "2024",
+              description: "MakeEasy platform launched, revolutionizing the service booking experience."
+            },
+            {
+              year: "2023",
+              description: "Company founded with the vision to simplify service discovery and booking."
+            }
+          ],
+          community: {
+            heading: "Join the MakeEasy Community",
+            description: "Be part of our growing community of customers and service providers.",
+            buttons: [
+              {
+                text: "Join as Customer",
+                link: "/register/customer"
+              },
+              {
+                text: "Join as Provider",
+                link: "/register/provider"
+              }
+            ]
+          }
         });
         console.log('About Us content seeded successfully');
       } catch (err) {
