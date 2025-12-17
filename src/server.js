@@ -163,6 +163,10 @@ app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 app.use(cookieParser());
 
+// Serve static files (uploaded images)
+const path = require('path');
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+
 // CORS Configuration
 const allowedOrigins = [
   'http://localhost:5173',
@@ -248,6 +252,8 @@ app.use('/api/bookings', require('./routes/bookingRoutes'));
 app.use('/api/orders', require('./routes/orderRoutes'));
 app.use('/api/cart', require('./routes/cartRoutes'));
 app.use('/api/about', require('./routes/aboutRoutes'));
+app.use('/api/banners', require('./routes/bannerRoutes'));
+app.use('/api/locations', require('./routes/locationRoutes'));
 
 // Test routes (No auth required - for troubleshooting)
 app.use('/api/test', require('./routes/testRoutes'));

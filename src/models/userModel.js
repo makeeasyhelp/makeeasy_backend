@@ -27,9 +27,39 @@ const UserSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: [true, 'Please add a password'],
+    required: function() {
+      // Password is required only if not using OAuth provider
+      return !this.authProvider || this.authProvider === 'local';
+    },
     minlength: [6, 'Password must be at least 6 characters'],
     select: false // Don't return password in queries
+  },
+  authProvider: {
+    type: String,
+    enum: ['local', 'google', 'facebook'],
+    default: 'local'
+  },
+  providerId: {
+    type: String, // Store the provider's user ID (e.g., Firebase UID)
+    sparse: true
+  },
+  photoURL: {
+    type: String // Profile picture URL from OAuth provider
+  },
+  profileImage: {
+    type: String // User's custom profile image URL
+  },
+  dateOfBirth: {
+    type: Date
+  },
+  gender: {
+    type: String,
+    enum: ['male', 'female', 'other', 'prefer-not-to-say', ''],
+    default: ''
+  },
+  address: {
+    type: String,
+    maxlength: [500, 'Address cannot be more than 500 characters']
   },
   role: {
     type: String,
@@ -48,8 +78,8 @@ const UserSchema = new mongoose.Schema({
 
 // Encrypt password using bcrypt
 UserSchema.pre('save', async function(next) {
-  // Only run this if password was modified
-  if (!this.isModified('password')) {
+  // Only run this if password was modified and password exists
+  if (!this.isModified('password') || !this.password) {
     return next();
   }
 
