@@ -2,8 +2,6 @@
 
 A RESTful API for the MakeEasy application built with Node.js, Express, and MongoDB.
 
-## Setup and Installation
-
 1. Clone the repository
 2. Install dependencies
    ```
