@@ -32,22 +32,22 @@ const app = express();
     console.log('NODE_ENV:', process.env.NODE_ENV || 'Not set');
     console.log('VERCEL:', process.env.VERCEL === '1' ? 'Yes' : 'No');
     console.log('MONGO_URI configured:', !!process.env.MONGO_URI);
-    
+
     // Print masked MongoDB URI for security
     if (process.env.MONGO_URI) {
       const uriMasked = process.env.MONGO_URI.replace(/:\/\/([^:]+):([^@]+)@/, '://***:***@');
       console.log('MongoDB URI:', uriMasked);
     }
-    
+
     // Attempt connection
     await connectDB();
-    
+
     // If we're connected successfully, set up connection event handlers
     if (mongoose.connection) {
       mongoose.connection.on('disconnected', () => {
         console.log('MongoDB disconnected!');
       });
-      
+
       mongoose.connection.on('error', (err) => {
         console.error('MongoDB connection error:', err);
       });
@@ -72,30 +72,30 @@ app.get('/api/status', async (req, res) => {
         console.log('Connection in error state, disconnecting...');
         await mongoose.disconnect();
       }
-      
+
       // Log MongoDB URI (masked for security)
-      const uriMasked = process.env.MONGO_URI ? 
-        process.env.MONGO_URI.replace(/:\/\/([^:]+):([^@]+)@/, '://***:***@') : 
+      const uriMasked = process.env.MONGO_URI ?
+        process.env.MONGO_URI.replace(/:\/\/([^:]+):([^@]+)@/, '://***:***@') :
         'undefined';
       console.log(`Status endpoint: Using MongoDB URI: ${uriMasked}`);
-      
+
       // Attempt to reconnect
       await connectDB();
     } catch (err) {
       console.error('Status endpoint: Failed to connect to MongoDB:', err.message);
     }
   }
-  
+
   const isConnected = mongoose.connection && mongoose.connection.readyState === 1;
   const readyState = mongoose.connection ? mongoose.connection.readyState : -1;
   const readyStateMap = {
-    0: 'disconnected', 
-    1: 'connected', 
-    2: 'connecting', 
+    0: 'disconnected',
+    1: 'connected',
+    2: 'connecting',
     3: 'disconnecting',
     '-1': 'uninitialized'
   };
-  
+
   res.json({
     status: 'online',
     environment: process.env.NODE_ENV || 'development',
@@ -115,14 +115,14 @@ app.get('/api/seed-database', async (req, res) => {
     // This endpoint should only work in development or with a secret key
     const apiKey = req.query.key || '';
     const secretKey = process.env.SEED_API_KEY || 'make-easy-seed-key';
-    
+
     if (process.env.NODE_ENV === 'production' && apiKey !== secretKey) {
       return res.status(403).json({
         success: false,
         message: 'Not authorized to seed database in production'
       });
     }
-    
+
     if (mongoose.connection && mongoose.connection.readyState === 1) {
       await seedDatabase(mongoose);
       return res.json({
@@ -147,7 +147,7 @@ app.get('/api/seed-database', async (req, res) => {
 // Seed database with initial data based on environment or manual override
 mongoose.connection.once('open', () => {
   console.log('MongoDB connection open event triggered');
-  
+
   // In development, always seed
   // In production, only seed if explicitly enabled via environment variable
   if (process.env.NODE_ENV === 'development' || process.env.FORCE_DB_SEED === 'true') {
@@ -163,6 +163,10 @@ app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 app.use(cookieParser());
 
+// Serve static files (uploaded images)
+const path = require('path');
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+
 // CORS Configuration
 const allowedOrigins = [
   'http://localhost:5173',
@@ -174,10 +178,10 @@ const allowedOrigins = [
 ].filter(Boolean); // Remove any undefined values
 
 app.use(cors({
-  origin: function(origin, callback) {
+  origin: function (origin, callback) {
     // Allow requests with no origin (like mobile apps, curl, Postman)
     if (!origin) return callback(null, true);
-    
+
     if (allowedOrigins.indexOf(origin) === -1) {
       const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
       return callback(new Error(msg), false);
@@ -186,7 +190,7 @@ app.use(cors({
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'Cache-Control', 'Pragma', 'If-Modified-Since', 'If-None-Match','*'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Cache-Control', 'Pragma', 'If-Modified-Since', 'If-None-Match', '*'],
   exposedHeaders: ['ETag', 'Last-Modified', 'Cache-Control']
 }));
 
@@ -219,10 +223,10 @@ app.use((req, res, next) => {
     if (sanitizedBody.password) sanitizedBody.password = '[FILTERED]';
     console.log(`📦 Request body:`, sanitizedBody);
   }
-  
+
   // Capture and log response
   const originalSend = res.send;
-  res.send = function(data) {
+  res.send = function (data) {
     console.log(`🔄 RESPONSE: Status ${res.statusCode}`);
     if (data && res.statusCode >= 400) {
       try {
@@ -234,7 +238,7 @@ app.use((req, res, next) => {
     }
     originalSend.apply(this, arguments);
   };
-  
+
   next();
 });
 
@@ -245,14 +249,18 @@ app.use('/api/products', require('./routes/productRoutes'));
 app.use('/api/categories', require('./routes/categoryRoutes'));
 app.use('/api/services', require('./routes/serviceRoutes'));
 app.use('/api/bookings', require('./routes/bookingRoutes'));
+app.use('/api/orders', require('./routes/orderRoutes'));
+app.use('/api/cart', require('./routes/cartRoutes'));
 app.use('/api/about', require('./routes/aboutRoutes'));
+app.use('/api/banners', require('./routes/bannerRoutes'));
+app.use('/api/locations', require('./routes/locationRoutes'));
 
 // Test routes (No auth required - for troubleshooting)
 app.use('/api/test', require('./routes/testRoutes'));
 
 // Base route
 app.get('/', (req, res) => {
-  res.json({ 
+  res.json({
     message: 'Welcome to MakeEasy API',
     version: '1.0.0',
     databaseConnected: mongoose.connection && mongoose.connection.readyState === 1
@@ -263,16 +271,16 @@ app.get('/', (req, res) => {
 app.post('/simple-role-register', express.json(), async (req, res) => {
   try {
     console.log('🧪 Simple role register endpoint called with body:', req.body);
-    
+
     const { name, email, password, phone, role } = req.body;
-    
+
     if (!name || !email || !password) {
       return res.status(400).json({
         success: false,
         error: 'Please provide name, email and password'
       });
     }
-    
+
     // Validate role if provided
     if (role && !['user', 'admin'].includes(role)) {
       return res.status(400).json({
@@ -280,10 +288,10 @@ app.post('/simple-role-register', express.json(), async (req, res) => {
         error: 'Role must be either "user" or "admin"'
       });
     }
-    
+
     // Import models directly
     const User = mongoose.model('User');
-    
+
     // Check if user exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -292,7 +300,7 @@ app.post('/simple-role-register', express.json(), async (req, res) => {
         error: 'Email already registered'
       });
     }
-    
+
     // Create user directly
     const user = await User.create({
       name,
@@ -301,7 +309,7 @@ app.post('/simple-role-register', express.json(), async (req, res) => {
       phone,
       role: role || 'user' // Default to 'user' if not provided
     });
-    
+
     return res.status(201).json({
       success: true,
       data: {
@@ -327,19 +335,19 @@ app.post('/api/simple-register', express.json(), async (req, res) => {
   try {
     console.log('🧪 SIMPLE REGISTER TEST ENDPOINT CALLED');
     console.log('Body:', req.body);
-    
+
     const { name, email, password, phone } = req.body;
-    
+
     if (!name || !email || !password) {
       return res.status(400).json({
         success: false,
         error: 'Please provide name, email and password'
       });
     }
-    
+
     // Import models directly to avoid middleware
     const User = mongoose.model('User');
-    
+
     // Check if user exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -348,7 +356,7 @@ app.post('/api/simple-register', express.json(), async (req, res) => {
         error: 'Email already registered'
       });
     }
-    
+
     // Create user directly
     const user = await User.create({
       name,
@@ -356,24 +364,24 @@ app.post('/api/simple-register', express.json(), async (req, res) => {
       password,
       phone
     });
-    
+
     // Create token directly
     const token = require('jsonwebtoken').sign(
-      { id: user._id }, 
-      process.env.JWT_SECRET, 
+      { id: user._id },
+      process.env.JWT_SECRET,
       { expiresIn: process.env.JWT_EXPIRE || '30d' }
     );
-    
+
     // Remove password
     user.password = undefined;
-    
+
     return res.status(201).json({
       success: true,
       token,
       data: user,
       message: 'Simple register endpoint successful'
     });
-    
+
   } catch (error) {
     console.error('❌ Simple register error:', error);
     res.status(500).json({

@@ -176,13 +176,22 @@ exports.updateDetails = async (req, res, next) => {
     const fieldsToUpdate = {
       name: req.body.name,
       email: req.body.email,
-      phone: req.body.phone
+      phone: req.body.phone,
+      dateOfBirth: req.body.dateOfBirth,
+      gender: req.body.gender,
+      address: req.body.address,
+      profileImage: req.body.profileImage
     };
 
     // Only include fields that were actually provided
     Object.keys(fieldsToUpdate).forEach(key => 
       fieldsToUpdate[key] === undefined && delete fieldsToUpdate[key]
     );
+
+    // Convert dateOfBirth string to Date if provided
+    if (fieldsToUpdate.dateOfBirth) {
+      fieldsToUpdate.dateOfBirth = new Date(fieldsToUpdate.dateOfBirth);
+    }
 
     const user = await User.findByIdAndUpdate(req.user.id, fieldsToUpdate, {
       new: true,
@@ -194,6 +203,50 @@ exports.updateDetails = async (req, res, next) => {
       data: user
     });
   } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * @desc    Upload profile image
+ * @route   POST /api/auth/upload-profile-image
+ * @access  Private
+ */
+exports.uploadProfileImage = async (req, res, next) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        error: 'Please upload an image file'
+      });
+    }
+
+    // Construct the image URL
+    const imageUrl = `/uploads/profiles/${req.file.filename}`;
+
+    // Update user's profileImage field
+    const user = await User.findByIdAndUpdate(
+      req.user.id,
+      { profileImage: imageUrl },
+      { new: true, runValidators: true }
+    );
+
+    res.status(200).json({
+      success: true,
+      data: {
+        profileImage: imageUrl,
+        user: user
+      }
+    });
+  } catch (error) {
+    // Delete uploaded file if database update fails
+    if (req.file) {
+      const fs = require('fs');
+      const filePath = req.file.path;
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+      }
+    }
     next(error);
   }
 };
@@ -249,6 +302,75 @@ exports.forgotPassword = async (req, res, next) => {
       data: 'Password reset functionality would send an email here'
     });
   } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * @desc    Google OAuth authentication
+ * @route   POST /api/auth/google
+ * @access  Public
+ */
+exports.googleAuth = async (req, res, next) => {
+  try {
+    const { name, email, providerId, photoURL } = req.body;
+
+    // Validate required fields
+    if (!email || !providerId) {
+      return res.status(400).json({
+        success: false,
+        error: 'Email and provider ID are required'
+      });
+    }
+
+    // Check if user already exists (by email or providerId)
+    let user = await User.findOne({ 
+      $or: [
+        { email: email },
+        { providerId: providerId, authProvider: 'google' }
+      ]
+    });
+
+    if (user) {
+      // User exists - update their info if needed
+      if (!user.providerId || !user.authProvider) {
+        user.providerId = providerId;
+        user.authProvider = 'google';
+      }
+      if (photoURL && !user.photoURL) {
+        user.photoURL = photoURL;
+      }
+      if (name && !user.name) {
+        user.name = name;
+      }
+      await user.save();
+    } else {
+      // Create new user with Google OAuth
+      user = await User.create({
+        name: name || email.split('@')[0], // Use part of email as name if not provided
+        email,
+        authProvider: 'google',
+        providerId,
+        photoURL,
+        role: 'user'
+      });
+    }
+
+    // Check if profile is complete
+    const isProfileComplete = !!(user.email && user.phone && user.password);
+
+    // Send token response with profile completion status
+    const token = user.getSignedJwtToken();
+    user.password = undefined;
+
+    res.status(200).json({
+      success: true,
+      token,
+      data: user,
+      isProfileComplete
+    });
+  } catch (error) {
+    console.error('Google auth error:', error);
     next(error);
   }
 };
