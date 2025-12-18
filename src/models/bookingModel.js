@@ -9,6 +9,10 @@ const BookingSchema = new mongoose.Schema({
     ref: 'User',
     required: true
   },
+  order: {
+    type: mongoose.Schema.ObjectId,
+    ref: 'Order'
+  },
   // Either product or service will be defined, not both
   product: {
     type: mongoose.Schema.ObjectId,
@@ -72,7 +76,7 @@ const BookingSchema = new mongoose.Schema({
 });
 
 // Add validation to ensure either product or service is provided
-BookingSchema.pre('save', function(next) {
+BookingSchema.pre('save', function (next) {
   if (!this.product && !this.service) {
     next(new Error('Either product or service must be provided'));
   } else if (this.product && this.service) {

@@ -20,7 +20,7 @@ A RESTful API for the MakeEasy application built with Node.js, Express, and Mong
 4. Run the server
    ```
    npm run dev
-   ```
+   
 
 ## API Documentation
 
