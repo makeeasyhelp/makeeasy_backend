@@ -51,7 +51,15 @@ exports.getCategory = async (req, res, next) => {
  */
 exports.createCategory = async (req, res, next) => {
   try {
-    const category = await Category.create(req.body);
+    const categoryData = { ...req.body };
+    
+    // Handle image upload if present
+    if (req.file) {
+      const imageUrl = `${req.protocol}://${req.get('host')}/uploads/categories/${req.file.filename}`;
+      categoryData.image = imageUrl;
+    }
+    
+    const category = await Category.create(categoryData);
     
     res.status(201).json({
       success: true,
@@ -78,7 +86,15 @@ exports.updateCategory = async (req, res, next) => {
       });
     }
     
-    category = await Category.findByIdAndUpdate(req.params.id, req.body, {
+    const updateData = { ...req.body };
+    
+    // Handle image upload if present
+    if (req.file) {
+      const imageUrl = `${req.protocol}://${req.get('host')}/uploads/categories/${req.file.filename}`;
+      updateData.image = imageUrl;
+    }
+    
+    category = await Category.findByIdAndUpdate(req.params.id, updateData, {
       new: true,
       runValidators: true
     });

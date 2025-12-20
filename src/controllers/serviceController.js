@@ -121,7 +121,15 @@ exports.getService = async (req, res, next) => {
  */
 exports.createService = async (req, res, next) => {
   try {
-    const service = await Service.create(req.body);
+    const serviceData = { ...req.body };
+    
+    // Handle image upload if present
+    if (req.file) {
+      const imageUrl = `${req.protocol}://${req.get('host')}/uploads/categories/${req.file.filename}`;
+      serviceData.image = imageUrl;
+    }
+    
+    const service = await Service.create(serviceData);
     
     res.status(201).json({
       success: true,
@@ -148,7 +156,15 @@ exports.updateService = async (req, res, next) => {
       });
     }
     
-    service = await Service.findByIdAndUpdate(req.params.id, req.body, {
+    const updateData = { ...req.body };
+    
+    // Handle image upload if present
+    if (req.file) {
+      const imageUrl = `${req.protocol}://${req.get('host')}/uploads/categories/${req.file.filename}`;
+      updateData.image = imageUrl;
+    }
+    
+    service = await Service.findByIdAndUpdate(req.params.id, updateData, {
       new: true,
       runValidators: true
     });

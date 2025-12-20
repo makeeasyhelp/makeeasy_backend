@@ -19,8 +19,11 @@ const CategorySchema = new mongoose.Schema({
   },
   icon: {
     type: String,
-    required: [true, 'Please add an icon name'],
     trim: true
+  },
+  image: {
+    type: String,
+    default: null
   },
   path: {
     type: String,
