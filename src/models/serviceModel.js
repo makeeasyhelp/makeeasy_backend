@@ -25,6 +25,9 @@ const ServiceSchema = new mongoose.Schema({
     type: String,
     default: null
   },
+  images: [{
+    type: String
+  }],
   price: {
     type: Number,
     required: [true, 'Please add a price'],

@@ -255,6 +255,11 @@ app.use('/api/about', require('./routes/aboutRoutes'));
 app.use('/api/banners', require('./routes/bannerRoutes'));
 app.use('/api/locations', require('./routes/locationRoutes'));
 
+// Rental system routes
+app.use('/api/rentals', require('./routes/rentalRoutes'));
+app.use('/api/kyc', require('./routes/kycRoutes'));
+app.use('/api/service-requests', require('./routes/serviceRequestRoutes'));
+
 // Test routes (No auth required - for troubleshooting)
 app.use('/api/test', require('./routes/testRoutes'));
 

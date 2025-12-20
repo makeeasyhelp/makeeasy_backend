@@ -5,6 +5,8 @@ const fs = require('fs');
 // Ensure uploads directories exist
 const profilesDir = path.join(__dirname, '../../uploads/profiles');
 const categoriesDir = path.join(__dirname, '../../uploads/categories');
+const productsDir = path.join(__dirname, '../../uploads/products');
+const servicesDir = path.join(__dirname, '../../uploads/services');
 
 if (!fs.existsSync(profilesDir)) {
   fs.mkdirSync(profilesDir, { recursive: true });
@@ -12,6 +14,14 @@ if (!fs.existsSync(profilesDir)) {
 
 if (!fs.existsSync(categoriesDir)) {
   fs.mkdirSync(categoriesDir, { recursive: true });
+}
+
+if (!fs.existsSync(productsDir)) {
+  fs.mkdirSync(productsDir, { recursive: true });
+}
+
+if (!fs.existsSync(servicesDir)) {
+  fs.mkdirSync(servicesDir, { recursive: true });
 }
 
 // Configure storage for profiles
@@ -36,6 +46,30 @@ const categoryStorage = multer.diskStorage({
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
     const ext = path.extname(file.originalname);
     cb(null, `category-${uniqueSuffix}${ext}`);
+  }
+});
+
+// Configure storage for products
+const productStorage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, productsDir);
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    const ext = path.extname(file.originalname);
+    cb(null, `product-${uniqueSuffix}${ext}`);
+  }
+});
+
+// Configure storage for services
+const serviceStorage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, servicesDir);
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    const ext = path.extname(file.originalname);
+    cb(null, `service-${uniqueSuffix}${ext}`);
   }
 });
 
@@ -70,7 +104,27 @@ const uploadCategory = multer({
   fileFilter: fileFilter
 });
 
+// Configure multer for products (multiple images)
+const uploadProduct = multer({
+  storage: productStorage,
+  limits: {
+    fileSize: 5 * 1024 * 1024 // 5MB limit per file
+  },
+  fileFilter: fileFilter
+});
+
+// Configure multer for services (multiple images)
+const uploadService = multer({
+  storage: serviceStorage,
+  limits: {
+    fileSize: 5 * 1024 * 1024 // 5MB limit per file
+  },
+  fileFilter: fileFilter
+});
+
 module.exports = {
   upload: uploadProfile,
-  uploadCategoryImage: uploadCategory
+  uploadCategoryImage: uploadCategory,
+  uploadProductImages: uploadProduct,
+  uploadServiceImages: uploadService
 };

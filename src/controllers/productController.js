@@ -218,3 +218,104 @@ exports.getFeaturedProducts = async (req, res, next) => {
     next(error);
   }
 };
+
+/**
+ * @desc    Upload product images
+ * @route   POST /api/products/:id/images
+ * @access  Private (Admin)
+ */
+exports.uploadProductImages = async (req, res, next) => {
+  try {
+    const product = await Product.findById(req.params.id);
+    
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        error: 'Product not found'
+      });
+    }
+
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({
+        success: false,
+        error: 'Please upload at least one image'
+      });
+    }
+
+    // Get uploaded image URLs
+    const imageUrls = req.files.map(file => `/uploads/products/${file.filename}`);
+    
+    // Add images to product's images array
+    product.images = [...(product.images || []), ...imageUrls];
+    
+    // Set first image as primary imageUrl if not set
+    if (!product.imageUrl && imageUrls.length > 0) {
+      product.imageUrl = imageUrls[0];
+    }
+    
+    await product.save();
+    
+    res.status(200).json({
+      success: true,
+      data: product,
+      uploadedImages: imageUrls
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * @desc    Delete product image
+ * @route   DELETE /api/products/:id/images/:imageIndex
+ * @access  Private (Admin)
+ */
+exports.deleteProductImage = async (req, res, next) => {
+  try {
+    const product = await Product.findById(req.params.id);
+    
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        error: 'Product not found'
+      });
+    }
+
+    const imageIndex = parseInt(req.params.imageIndex);
+    
+    if (isNaN(imageIndex) || imageIndex < 0 || imageIndex >= product.images.length) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid image index'
+      });
+    }
+
+    // Remove image from array
+    const deletedImage = product.images[imageIndex];
+    product.images.splice(imageIndex, 1);
+    
+    // If deleted image was the primary image, set new primary
+    if (product.imageUrl === deletedImage && product.images.length > 0) {
+      product.imageUrl = product.images[0];
+    } else if (product.images.length === 0) {
+      product.imageUrl = null;
+    }
+    
+    await product.save();
+    
+    // Optional: Delete file from filesystem
+    const fs = require('fs');
+    const path = require('path');
+    const imagePath = path.join(__dirname, '../../', deletedImage);
+    if (fs.existsSync(imagePath)) {
+      fs.unlinkSync(imagePath);
+    }
+    
+    res.status(200).json({
+      success: true,
+      data: product
+    });
+  } catch (error) {
+    next(error);
+  }
+};

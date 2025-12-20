@@ -5,10 +5,12 @@ const {
   createService, 
   updateService, 
   deleteService,
-  getFeaturedServices
+  getFeaturedServices,
+  uploadServiceImages,
+  deleteServiceImage
 } = require('../controllers/serviceController');
 const { protect, authorize } = require('../middleware/auth');
-const { uploadCategoryImage } = require('../config/multer');
+const { uploadCategoryImage, uploadServiceImages: uploadMiddleware } = require('../config/multer');
 
 const router = express.Router();
 
@@ -23,5 +25,11 @@ router.route('/:id')
   .get(getService)
   .put(protect, authorize('admin'), uploadCategoryImage.single('image'), updateService)
   .delete(protect, authorize('admin'), deleteService);
+
+router.route('/:id/images')
+  .post(protect, authorize('admin'), uploadMiddleware.array('images', 5), uploadServiceImages);
+
+router.route('/:id/images/:imageIndex')
+  .delete(protect, authorize('admin'), deleteServiceImage);
 
 module.exports = router;

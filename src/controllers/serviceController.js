@@ -223,3 +223,104 @@ exports.getFeaturedServices = async (req, res, next) => {
     next(error);
   }
 };
+
+/**
+ * @desc    Upload service images
+ * @route   POST /api/services/:id/images
+ * @access  Private (Admin)
+ */
+exports.uploadServiceImages = async (req, res, next) => {
+  try {
+    const service = await Service.findById(req.params.id);
+    
+    if (!service) {
+      return res.status(404).json({
+        success: false,
+        error: 'Service not found'
+      });
+    }
+
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({
+        success: false,
+        error: 'Please upload at least one image'
+      });
+    }
+
+    // Get uploaded image URLs
+    const imageUrls = req.files.map(file => `/uploads/services/${file.filename}`);
+    
+    // Add images to service's images array
+    service.images = [...(service.images || []), ...imageUrls];
+    
+    // Set first image as primary image if not set
+    if (!service.image && imageUrls.length > 0) {
+      service.image = imageUrls[0];
+    }
+    
+    await service.save();
+    
+    res.status(200).json({
+      success: true,
+      data: service,
+      uploadedImages: imageUrls
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * @desc    Delete service image
+ * @route   DELETE /api/services/:id/images/:imageIndex
+ * @access  Private (Admin)
+ */
+exports.deleteServiceImage = async (req, res, next) => {
+  try {
+    const service = await Service.findById(req.params.id);
+    
+    if (!service) {
+      return res.status(404).json({
+        success: false,
+        error: 'Service not found'
+      });
+    }
+
+    const imageIndex = parseInt(req.params.imageIndex);
+    
+    if (isNaN(imageIndex) || imageIndex < 0 || imageIndex >= service.images.length) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid image index'
+      });
+    }
+
+    // Remove image from array
+    const deletedImage = service.images[imageIndex];
+    service.images.splice(imageIndex, 1);
+    
+    // If deleted image was the primary image, set new primary
+    if (service.image === deletedImage && service.images.length > 0) {
+      service.image = service.images[0];
+    } else if (service.images.length === 0) {
+      service.image = null;
+    }
+    
+    await service.save();
+    
+    // Optional: Delete file from filesystem
+    const fs = require('fs');
+    const path = require('path');
+    const imagePath = path.join(__dirname, '../../', deletedImage);
+    if (fs.existsSync(imagePath)) {
+      fs.unlinkSync(imagePath);
+    }
+    
+    res.status(200).json({
+      success: true,
+      data: service
+    });
+  } catch (error) {
+    next(error);
+  }
+};
