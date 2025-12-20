@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 /**
- * User Schema
+ * User Schema - Enhanced for Rental System
  */
 const UserSchema = new mongoose.Schema({
   name: {
@@ -61,6 +61,83 @@ const UserSchema = new mongoose.Schema({
     type: String,
     maxlength: [500, 'Address cannot be more than 500 characters']
   },
+  
+  // === RENTAL-SPECIFIC FIELDS ===
+  
+  // Multiple Addresses
+  addresses: [{
+    label: {
+      type: String, // 'Home', 'Office', 'Other'
+      required: true
+    },
+    addressLine1: {
+      type: String,
+      required: true,
+      trim: true
+    },
+    addressLine2: {
+      type: String,
+      trim: true
+    },
+    city: {
+      type: String,
+      required: true,
+      trim: true
+    },
+    state: {
+      type: String,
+      required: true,
+      trim: true
+    },
+    pincode: {
+      type: String,
+      required: true,
+      trim: true
+    },
+    landmark: {
+      type: String,
+      trim: true
+    },
+    isDefault: {
+      type: Boolean,
+      default: false
+    }
+  }],
+  
+  // Preferred City (for showing relevant products)
+  preferredCity: {
+    type: String,
+    trim: true
+  },
+  
+  // KYC Status
+  kycStatus: {
+    type: String,
+    enum: ['not_submitted', 'pending', 'under_review', 'verified', 'rejected'],
+    default: 'not_submitted'
+  },
+  
+  kycDetails: {
+    type: mongoose.Schema.ObjectId,
+    ref: 'KYC'
+  },
+  
+  // Billing Information
+  billingInfo: {
+    gstNumber: {
+      type: String,
+      trim: true
+    },
+    panNumber: {
+      type: String,
+      trim: true
+    },
+    businessName: {
+      type: String,
+      trim: true
+    }
+  },
+  
   role: {
     type: String,
     enum: ['user', 'admin'],
@@ -113,6 +190,12 @@ UserSchema.methods.getSignedJwtToken = function() {
 // Match user entered password to hashed password in database
 UserSchema.methods.matchPassword = async function(enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
+};
+
+// Get default address
+UserSchema.methods.getDefaultAddress = function() {
+  const defaultAddr = this.addresses.find(addr => addr.isDefault);
+  return defaultAddr || this.addresses[0] || null;
 };
 
 module.exports = mongoose.model('User', UserSchema);

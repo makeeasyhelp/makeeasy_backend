@@ -21,6 +21,13 @@ const ServiceSchema = new mongoose.Schema({
     required: [true, 'Please add an icon name'],
     trim: true
   },
+  image: {
+    type: String,
+    default: null
+  },
+  images: [{
+    type: String
+  }],
   price: {
     type: Number,
     required: [true, 'Please add a price'],

@@ -12,7 +12,7 @@ const {
   uploadProfileImage 
 } = require('../controllers/authController');
 const { protect } = require('../middleware/auth');
-const upload = require('../config/multer');
+const { upload } = require('../config/multer');
 
 const router = express.Router();
 

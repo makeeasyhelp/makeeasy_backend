@@ -2,22 +2,74 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-// Ensure uploads directory exists
-const uploadDir = path.join(__dirname, '../../uploads/profiles');
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
+// Ensure uploads directories exist
+const profilesDir = path.join(__dirname, '../../uploads/profiles');
+const categoriesDir = path.join(__dirname, '../../uploads/categories');
+const productsDir = path.join(__dirname, '../../uploads/products');
+const servicesDir = path.join(__dirname, '../../uploads/services');
+
+if (!fs.existsSync(profilesDir)) {
+  fs.mkdirSync(profilesDir, { recursive: true });
 }
 
-// Configure storage
-const storage = multer.diskStorage({
+if (!fs.existsSync(categoriesDir)) {
+  fs.mkdirSync(categoriesDir, { recursive: true });
+}
+
+if (!fs.existsSync(productsDir)) {
+  fs.mkdirSync(productsDir, { recursive: true });
+}
+
+if (!fs.existsSync(servicesDir)) {
+  fs.mkdirSync(servicesDir, { recursive: true });
+}
+
+// Configure storage for profiles
+const profileStorage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, uploadDir);
+    cb(null, profilesDir);
   },
   filename: function (req, file, cb) {
     // Create unique filename: userId-timestamp.extension
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
     const ext = path.extname(file.originalname);
     cb(null, `profile-${req.user.id}-${uniqueSuffix}${ext}`);
+  }
+});
+
+// Configure storage for categories
+const categoryStorage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, categoriesDir);
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    const ext = path.extname(file.originalname);
+    cb(null, `category-${uniqueSuffix}${ext}`);
+  }
+});
+
+// Configure storage for products
+const productStorage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, productsDir);
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    const ext = path.extname(file.originalname);
+    cb(null, `product-${uniqueSuffix}${ext}`);
+  }
+});
+
+// Configure storage for services
+const serviceStorage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, servicesDir);
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    const ext = path.extname(file.originalname);
+    cb(null, `service-${uniqueSuffix}${ext}`);
   }
 });
 
@@ -34,13 +86,45 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
-// Configure multer
-const upload = multer({
-  storage: storage,
+// Configure multer for profiles
+const uploadProfile = multer({
+  storage: profileStorage,
   limits: {
     fileSize: 5 * 1024 * 1024 // 5MB limit
   },
   fileFilter: fileFilter
 });
 
-module.exports = upload;
+// Configure multer for categories
+const uploadCategory = multer({
+  storage: categoryStorage,
+  limits: {
+    fileSize: 5 * 1024 * 1024 // 5MB limit
+  },
+  fileFilter: fileFilter
+});
+
+// Configure multer for products (multiple images)
+const uploadProduct = multer({
+  storage: productStorage,
+  limits: {
+    fileSize: 5 * 1024 * 1024 // 5MB limit per file
+  },
+  fileFilter: fileFilter
+});
+
+// Configure multer for services (multiple images)
+const uploadService = multer({
+  storage: serviceStorage,
+  limits: {
+    fileSize: 5 * 1024 * 1024 // 5MB limit per file
+  },
+  fileFilter: fileFilter
+});
+
+module.exports = {
+  upload: uploadProfile,
+  uploadCategoryImage: uploadCategory,
+  uploadProductImages: uploadProduct,
+  uploadServiceImages: uploadService
+};
